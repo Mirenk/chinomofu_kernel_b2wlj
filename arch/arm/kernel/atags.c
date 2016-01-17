@@ -4,6 +4,24 @@
 #include <asm/types.h>
 #include <asm/page.h>
 
+/*
+ * [PATCH] Backport arch/arm/kernel/atags.c from 3.10
+ *
+ * There is a bug in older kernels, causing kexec-tools binary to
+ * only read first 1024 bytes from /proc/atags. I guess the bug is
+ * somewhere in /fs/proc/, since I don't think the callback in atags.c
+ * does something wrong. It might affect all procfs files using that
+ * old read callback instead of fops. Doesn't matter though, since it
+ * was accidentally fixed when 3.10 removed it.
+ *
+ * This has no particular effect on grouper, because the atags are
+ * organized "just right" (most important tags are near beginning,
+ * the ones at the end are some useless nvidia-specific tags), but
+ * it might be very hard to track down on a device where it causes
+ * problems.
+ *
+ */
+
 struct buffer {
 	size_t size;
 	char data[];
